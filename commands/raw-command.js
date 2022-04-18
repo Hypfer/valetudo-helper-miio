@@ -6,20 +6,20 @@ module.exports = async (command, params, options) => {
     let token;
     let paramsForMiio = [];
 
+    if(/^[0-9a-fA-F]{32}$/.test(options.token)) {
+        token = Buffer.from(options.token, "hex");
+    } else {
+        token = Buffer.from(options.token);
+    }
+
     if (
         (/^[0-9a-fA-F]{32}$/.test(options.token) && options.token === "ffffffffffffffffffffffffffffffff") ||
-        Buffer.from(options.token).length !== 16
+        token.length !== 16
     ) {
         console.error(`ERROR: "${options.token}" is not a valid token.`);
 
         console.log("\n\nExiting..");
         process.exit(-1);
-    } else {
-        if(/^[0-9a-fA-F]{32}$/.test(options.token)) {
-            token = Buffer.from(options.token, "hex");
-        } else {
-            token = Buffer.from(options.token);
-        }
     }
 
     if(!/^[0-9]+$/.test(options.deviceId)) {
