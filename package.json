@@ -9,10 +9,20 @@
     "discover": "node app.js discover",
     "raw-command": "node app.js raw-command -d 12356 -t vdO8yJRZSsupwSQf -a 192.168.8.1 get_properties '[{\"did\":383105565, \"siid\":4,\"piid\":23}]'",
 
+    "lint": "eslint .",
+    "lint_fix": "eslint . --fix",
+
     "build": "npm run build_win && npm run build_lin_amd64 && npm run build_lin_armv7",
     "build_win": "cross-env PKG_CACHE_PATH=./build_dependencies/pkg pkg --targets node16-win-x64 --compress Brotli --no-bytecode --public-packages \"*\" . --output ./build/valetudo-helper-miio.exe",
     "build_lin_amd64": "cross-env PKG_CACHE_PATH=./build_dependencies/pkg pkg --targets node16-linuxstatic-x64 --compress Brotli --no-bytecode --public-packages \"*\" . --output ./build/valetudo-helper-miio-amd64",
     "build_lin_armv7": "cross-env PKG_CACHE_PATH=./build_dependencies/pkg pkg --targets node16-linuxstatic-armv7 --compress Brotli --no-bytecode --public-packages \"*\" . --output ./build/valetudo-helper-miio-armv7"
+  },
+  "pkg": {
+    "assets": [
+      "./.git/HEAD",
+      "./.git/refs/heads/master",
+      "./package.json"
+    ]
   },
   "author": "",
   "license": "Apache-2.0",
@@ -24,6 +34,14 @@
   },
   "devDependencies": {
     "cross-env": "7.0.3",
-    "pkg": "5.6.0"
+    "pkg": "5.6.0",
+    "eslint": "7.32.0",
+    "eslint-plugin-react": "7.27.1",
+    "eslint-plugin-react-hooks": "4.3.0",
+    "eslint-plugin-jsdoc": "37.0.3",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-regexp": "1.5.1",
+    "eslint-plugin-sort-keys-fix": "^1.1.1",
+    "eslint-plugin-sort-requires": "git+https://npm@github.com/Hypfer/eslint-plugin-sort-requires.git#2.1.1"
   }
 }

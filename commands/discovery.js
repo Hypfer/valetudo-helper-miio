@@ -9,14 +9,18 @@ module.exports = () => {
     const discoveredInstances = [];
     console.log("Starting discovery for 5s...");
 
-    const broadcastAddresses = Tools.GET_NETWORK_INTERFACES().filter(i => i.family === "IPv4").map(i => {
+    const broadcastAddresses = Tools.GET_NETWORK_INTERFACES().filter(i => {
+        return i.family === "IPv4";
+    }).map(i => {
         //Adapted from https://github.com/aal89/broadcast-address
-        var addr_splitted = i.address.split('.');
-        var netmask_splitted = i.netmask.split('.');
+        var addr_splitted = i.address.split(".");
+        var netmask_splitted = i.netmask.split(".");
 
         // bitwise OR over the splitted NAND netmask, then glue them back together with a dot character to form an ip
         // we have to do a NAND operation because of the 2-complements; getting rid of all the 'prepended' 1's with & 0xFF
-        return addr_splitted.map((e, i) => (~netmask_splitted[i] & 0xFF) | e).join('.');
+        return addr_splitted.map((e, i) => {
+            return (~netmask_splitted[i] & 0xFF) | e;
+        }).join(".");
     });
 
     const socket = dgram.createSocket("udp4");
@@ -27,21 +31,21 @@ module.exports = () => {
 
         broadcastAddresses.forEach(addr => {
             socket.send(HELO, 54321, addr);
-        })
+        });
 
         setTimeout(() => {
             broadcastAddresses.forEach(addr => {
                 socket.send(HELO, 54321, addr);
-            })
+            });
         }, 1000);
 
         setTimeout(() => {
             broadcastAddresses.forEach(addr => {
                 socket.send(HELO, 54321, addr);
-            })
+            });
         }, 3000);
 
-    })
+    });
 
     socket.on("message", (incomingMsg, rinfo) => {
         const codec = new Codec({token: Buffer.from("ffffffffffffffffffffffffffffffff")});
@@ -49,7 +53,7 @@ module.exports = () => {
 
         try {
             decoded = codec.decodeIncomingMiioPacket(incomingMsg);
-        } catch(e) {
+        } catch (e) {
             console.error("Error while decoding discovery response", {
                 err: e,
                 rinfo: rinfo,
@@ -59,7 +63,9 @@ module.exports = () => {
             return;
         }
 
-        if(!discoveredInstances.find(i => i.deviceId === decoded.deviceId)) {
+        if (!discoveredInstances.find(i => {
+            return i.deviceId === decoded.deviceId;
+        })) {
             discoveredInstances.push({
                 deviceId: decoded.deviceId,
                 token: decoded.token,
@@ -84,16 +90,16 @@ module.exports = () => {
                     `\t\tIP: ${instance.address}`,
                     `\t\tToken: ${stringToken}`,
                     ""
-                ].join("\n"))
+                ].join("\n"));
             } else {
                 console.log([
                     "\tProvisioned robot",
                     `\t\tDeviceId: ${instance.deviceId}`,
                     `\t\tIP: ${instance.address}`,
                     ""
-                ].join("\n"))
+                ].join("\n"));
             }
-        })
+        });
 
 
         console.log("Exiting..");
@@ -101,4 +107,4 @@ module.exports = () => {
 
         process.exit(0);
     }, 5000);
-}
+};

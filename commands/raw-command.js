@@ -6,14 +6,14 @@ module.exports = async (command, params, options) => {
     let token;
     let paramsForMiio = [];
 
-    if(/^[0-9a-fA-F]{32}$/.test(options.token)) {
+    if (/^[\da-fA-F]{32}$/.test(options.token)) {
         token = Buffer.from(options.token, "hex");
     } else {
         token = Buffer.from(options.token);
     }
 
     if (
-        (/^[0-9a-fA-F]{32}$/.test(options.token) && options.token === "ffffffffffffffffffffffffffffffff") ||
+        (/^[\da-fA-F]{32}$/.test(options.token) && options.token === "ffffffffffffffffffffffffffffffff") ||
         token.length !== 16
     ) {
         console.error(`ERROR: "${options.token}" is not a valid token.`);
@@ -22,7 +22,7 @@ module.exports = async (command, params, options) => {
         process.exit(-1);
     }
 
-    if(!/^[0-9]+$/.test(options.deviceId)) {
+    if (!/^\d+$/.test(options.deviceId)) {
         console.error(`ERROR: "${options.deviceId}" is not a valid deviceId.`);
 
         console.log("\n\nExiting..");
@@ -32,7 +32,7 @@ module.exports = async (command, params, options) => {
     if (params !== undefined) {
         try {
             paramsForMiio = JSON.parse(params);
-        } catch(e) {
+        } catch (e) {
             console.error(`ERROR: Params "${params}" is not valid json.`);
             console.error("Are you using the powershell?\nIf so, you will need to do \"\"foo\"\" as single double quotes will be stripped :(");
 
@@ -66,7 +66,7 @@ module.exports = async (command, params, options) => {
         console.log(res);
 
         process.exit(0);
-    } catch(e) {
+    } catch (e) {
         console.error("ERROR: Error while sending command to robot\nError:");
         console.error(e);
 
@@ -74,4 +74,4 @@ module.exports = async (command, params, options) => {
 
         process.exit(-1);
     }
-}
+};
