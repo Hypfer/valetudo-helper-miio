@@ -1,3 +1,4 @@
+const createMiioHeader = require("../miio/MiioHeader");
 const dgram = require("dgram");
 const MiioSocket = require("../miio/MiioSocket");
 
@@ -52,8 +53,41 @@ module.exports = async (command, params, options) => {
         rinfo: {address: options.address, port: MiioSocket.PORT},
         timeout: 5000,
         name: "local",
-        isCloudSocket: false
+        isCloudSocket: false,
     });
+
+    // Handshake before sending any command
+    let handshakeDone = false;
+
+    miioSock.onEmptyPacket = () => {
+        handshakeDone = true;
+    };
+
+    const packet = createMiioHeader();
+    socket.send(packet, 0, packet.length, MiioSocket.PORT, options.address);
+
+    let i = 0;
+    while (i <= 30) {
+        if (handshakeDone === true) {
+            break;
+        }
+
+        await new Promise(resolve => {
+            setTimeout(() => {
+                resolve();
+            }, 100);
+        });
+
+        i++;
+    }
+
+    if (handshakeDone !== true) {
+        console.error("ERROR: Failed to successfully handshake with the robot.");
+
+        console.log("\n\nExiting..");
+
+        process.exit(-1);
+    }
 
 
     try {
